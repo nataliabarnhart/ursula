@@ -22,7 +22,7 @@ export default {
     'sewing pattern',
   ],
   optionGroups: {
-    fit: ['stretch','gussetWidth','gussetLength','elasticStretch'],
+    fit: ['fabricStretch','gussetWidth','gussetLength','elasticStretch'],
     style: ['rise','legOpening','frontDip','backDip','taperToGusset','backExposure'],
   },
   measurements: ['waist','seat','waistToSeat','waistToUpperLeg'], // Potentially useful: 'hips', 'waistToHips'
@@ -39,7 +39,7 @@ export default {
     // Percentages
     gussetWidth: { pct : 7.7, min: 4, max: 12 }, // Gusset width in relation to seat
     gussetLength: { pct: 12.7, min: 10, max: 16 }, // Gusset length in relation to seat
-    stretch: { pct: 15, min: 5, max: 25 },
+    fabricStretch: { pct: 15, min: 5, max: 25 },
     rise: { pct: 60, min: 30, max: 100 },
     legOpening: { pct: 58, min: 5, max: 85 },
     frontDip: { pct: 5.0, min: -5, max: 15 },

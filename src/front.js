@@ -18,7 +18,7 @@ export default function (part) {
 
   // Stretch utility method
 
-  store.set('xScale', utils.stretchToScale(options.stretch))
+  store.set('xScale', utils.stretchToScale(options.fabricStretch))
 
   // Design pattern here
 
