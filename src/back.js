@@ -27,12 +27,10 @@ export default function (part) {
     (measurements.seat / 4) - (measurements.waist * options.gussetWidth) * store.get('xScale') / options.gussetRatio * options.backToFrontWidth,
     measurements.waistToUpperLeg * options.backToFrontLength
   )
-//  points.backHipDipLeft = new Point(points.backGussetLeft.x * 0.85, points.backGussetLeft.y * 1.1)
   points.backGussetMid = new Point(measurements.seat / 4, measurements.waistToUpperLeg * options.backToFrontLength)
 
   points.backGussetRight = points.backGussetLeft.flipX(points.backWaistMid)
   points.backLegOpeningRight = points.backLegOpeningLeft.flipX(points.backWaistMid)
-//    points.backHipDipRight = points.backHipDipLeft.flipX(points.backWaistMid)
   points.backWaistBandRight = points.backWaistBandLeft.flipX(points.backWaistMid)
 
   points.backWaistBandMid = points.backWaistBandLeft.shiftFractionTowards(points.backWaistBandRight, 0.5)
@@ -44,20 +42,10 @@ export default function (part) {
 
   // Create control points
 
-  /* Control points for leg opening curves */
-
-//  points.backLegOpeningLeftCp1 = points.backLegOpeningLeft
-//    .shift(180, points.backGussetLeft.dy(points.backLegOpeningLeft) / 3);
-//  points.backGussetLeftCp1 = points.backGussetLeft
-//    .shift(270, points.backGussetLeft.dy(points.backLegOpeningLeft) / 2);
-
   /* Control point for waistband dip */
   points.backWaistBandLeftCp1 = new Point(points.backWaistBandRight.x / 3, points.backWaistBandMid.y)
 
   /* Flip points to right side */
-//  points.backLegOpeningRightCp1 = points.backLegOpeningLeftCp1.flipX(points.backWaistMid)
-//  points.backHipDipRightCp1 = points.backHipDipLeftCp1.flipX(points.backWaistMid)
-//  points.backGussetRightCp1 = points.backGussetLeftCp1.flipX(points.backWaistMid)
   points.backWaistBandRightCp1 = points.backWaistBandLeftCp1.flipX(points.backWaistMid)
 
   // Shape back coverage
@@ -71,13 +59,13 @@ export default function (part) {
   )
 
   if (options.backExposure >= 0) {
-    /* If back exposure is high, like a thong */
+    /* If back exposure is high, like a thong style */
       /* This controls the hip bit */
     points.backLegOpeningLeftCp1 = points.backLegOpeningLeft.shiftFractionTowards(
       points.backLegOpeningCorner,
       options.backExposure
     )
-      /* This controls the thongy bit */
+      /* This controls the center bit */
     points.backGussetLeftCp1 = points.backGussetLeft.shiftFractionTowards(
       points.backWaistBandMid,
       options.backExposure
@@ -87,9 +75,6 @@ export default function (part) {
   } else {
     /* If back exposure is low and flares out to cover more */
       /* This controls the hip bit */
-//    points.backLegOpeningLeftCp1 = points.backLegOpeningLeft.shiftFractionTowards(
-//      points.backLegOpeningCorner,
-//      0.1//options.backExposure * -0.5
     points.backLegOpeningLeftCp1 = points.backLegOpeningLeft.shift(
       -45,
       points.backWaistBandMid.x / 8
@@ -147,16 +132,12 @@ export default function (part) {
       .move(points.backWaistBandMid)
       .curve(points.backWaistBandLeftCp1, points.backWaistBandLeft, points.backWaistBandLeft) // Waist band dip
       .line(points.backLegOpeningLeft)
-//      .line(points.backFlareLeft)
       .curve(points.backLegOpeningLeftCp1, points.backFlareLeftCp1, points.backFlareLeft)
-//      .line(points.backGussetLeft)
       .curve(points.backFlareLeftCp2, points.backGussetLeftCp1, points.backGussetLeft)
       .line(points.backGussetMid)
       .line(points.backGussetRight)
-//      .line(points.backFlareRight)
       .curve(points.backGussetRightCp1, points.backFlareRightCp2, points.backFlareRight)
       .curve(points.backFlareRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight)
-//      .line(points.backLegOpeningRight)
       .line(points.backWaistBandRight)
       .curve(points.backWaistBandRight, points.backWaistBandRightCp1, points.backWaistBandMid) // Waist band dip
       .close()
@@ -172,13 +153,24 @@ export default function (part) {
 
     /* Store lengths for use in elastic */
 
-    store.set(
-      'backLegOpeningLength',
-      new Path()
-        .move(points.backGussetRight)
-        .curve(points.backGussetRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight)
-        .length()
-    )
+    if (options.backExposure >= 0 ) {
+      store.set(
+        'backLegOpeningLength',
+        new Path()
+          .move(points.backGussetRight)
+          .curve(points.backGussetRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight)
+          .length()
+      )
+    } else {
+      store.set(
+        'backLegOpeningLength',
+        new Path()
+          .move(points.backGussetRight)
+          .curve(points.backGussetRightCp1, points.backFlareRightCp2, points.backFlareRight)
+          .curve(points.backFlareRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight),
+      )
+    }
+
     store.set(
       'backWaistBandLength',
       new Path()
@@ -226,12 +218,22 @@ export default function (part) {
       to: points.backGussetMid,
       x: points.backWaistBandMid.x + sa + 15,
     })
-    macro('pd', {
-      path: new Path()
-        .move(points.backGussetRight)
-        .curve(points.backGussetRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight),
-      d:  15
-    })
+    if (options.backExposure >= 0 ) {
+      macro('pd', {
+        path: new Path()
+          .move(points.backGussetRight)
+          .curve(points.backGussetRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight),
+        d: 15
+      })
+    } else {
+      macro('pd', {
+        path: new Path()
+          .move(points.backGussetRight)
+          .curve(points.backGussetRightCp1, points.backFlareRightCp2, points.backFlareRight)
+          .curve(points.backFlareRightCp1, points.backLegOpeningRightCp1, points.backLegOpeningRight),
+        d: 15
+      })
+    }
   }
 
   return part

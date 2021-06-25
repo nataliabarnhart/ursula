@@ -26,7 +26,7 @@ export default function (part) {
   let legOpeningLength = store.get('frontLegOpeningLength') + store.get('backLegOpeningLength') + store.get('gussetSideLength')
   let waistBandLength = store.get('frontWaistBandLength') + store.get('backWaistBandLength')
 
-  points.elasticInfo = new Point(0,20)
+  points.elasticInfo = new Point(0,0)
     .attr('data-text', 'cutTwoPiecesOfElasticToFinishTheLegOpenings')
     .attr('data-text', ':')
     .attr('data-text', units(legOpeningLength * store.get('elasticScale') + 2 * sa))
@@ -42,9 +42,6 @@ export default function (part) {
     //   paths.sa = paths.seam.offset(sa).attr('class', 'fabric sa')
     // }
   }
-
-  // points.scaleboxAnchor = points.scalebox = points.elasticInfo.shift(90, -100)
-  // macro('scalebox', { at: points.scalebox })
 
   // Paperless?
   if (paperless) {
